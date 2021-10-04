@@ -4,6 +4,7 @@ import androidx.compose.compiler.plugins.kotlin.AbstractCodegenTest
 import androidx.compose.compiler.plugins.kotlin.AbstractLoweringTests
 import androidx.compose.compiler.plugins.kotlin.ComposeIrTransformTest
 import androidx.compose.compiler.plugins.kotlin.compose
+import androidx.compose.runtime.Composable
 import org.junit.Test
 
 class HelloWorldCodegenTest: ComposeIrTransformTest() {
