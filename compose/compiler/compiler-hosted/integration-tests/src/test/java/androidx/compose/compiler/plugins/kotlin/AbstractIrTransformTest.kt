@@ -164,6 +164,33 @@ abstract class AbstractIrTransformTest : AbstractCodegenTest() {
             return
         }
 
+        val actualTransformed = runIrTransform(
+            source = source,
+            extra = extra,
+            validator = validator,
+            dumpTree = dumpTree,
+            compilation = compilation
+        )
+
+        assertEquals(
+            expectedTransformed
+                .trimIndent()
+                .trimTrailingWhitespacesAndAddNewlineAtEOF(),
+            actualTransformed
+        )
+    }
+
+    fun runIrTransform(
+        @Language("kotlin")
+        source: String,
+        @Language("kotlin")
+        extra: String = "",
+        validator: (element: IrElement) -> Unit = { },
+        dumpTree: Boolean = false,
+        compilation: Compilation = JvmCompilation(),
+        dumpActualTransformed: Boolean = false
+    ): String {
+
         val files = listOf(
             sourceFile("Test.kt", source.replace('%', '$')),
             sourceFile("Extra.kt", extra.replace('%', '$'))
@@ -207,7 +234,7 @@ abstract class AbstractIrTransformTest : AbstractCodegenTest() {
                 )
             ) {
                 "${it.groupValues[1]}\"${
-                generateSourceInfo(it.groupValues[4], source)
+                    generateSourceInfo(it.groupValues[4], source)
                 }\")"
             }
             .replace(
@@ -222,7 +249,7 @@ abstract class AbstractIrTransformTest : AbstractCodegenTest() {
                 )
             ) {
                 "${it.groupValues[1]}\"${
-                generateSourceInfo(it.groupValues[2], source)
+                    generateSourceInfo(it.groupValues[2], source)
                 }\")"
             }
             // replace source keys for joinKey calls
@@ -257,12 +284,11 @@ abstract class AbstractIrTransformTest : AbstractCodegenTest() {
         if (dumpTree) {
             println(irModule.dump())
         }
-        assertEquals(
-            expectedTransformed
-                .trimIndent()
-                .trimTrailingWhitespacesAndAddNewlineAtEOF(),
-            actualTransformed
-        )
+        if (dumpActualTransformed) {
+            println(actualTransformed)
+        }
+
+        return actualTransformed
     }
 
     private fun MatchResult.isNumber() = groupValues[1].isNotEmpty()
